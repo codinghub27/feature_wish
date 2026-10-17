@@ -54,27 +54,51 @@ export const sfx = {
   burst(){ noise(.9, .14, 'highpass', 1200, .5, 0, 6000); tone('sine', 220, 880, .5, .1); [784, 988, 1175, 1568, 1976].forEach((f, i) => tone('sine', f, f, .7, .045, .25 + i * .05)); }
 };
 
-/* ---------- balloon pops: 7 different sounds ----------
-   Each balloon colour has its own family of pops, a random one is picked inside the family,
-   and the pitch follows the balloon size (big = lower). Every 10th pop plays a jackpot. */
-const crack = (p, v) => { noise(.05, (v || .32), 'highpass', 2200 * p, .8); noise(.09, .12, 'bandpass', 1200 * p, 1.2); };
+/* ---------- balloon pops: 10 clearly different sounds ----------
+   They play in a shuffled order (like a shuffled playlist), so two pops in a row never sound the same.
+   Pitch follows the balloon size (big = lower). Every 10th pop adds a jackpot fanfare. */
+// a tone with vibrato/tremolo, for squeaks, wobbles and whistles
+function wobble(type, f1, f2, dur, vol, delay, rate, depth){
+  const c = ac(); if (!c) return;
+  const t = c.currentTime + (delay || 0), o = c.createOscillator(), g = c.createGain(), l = c.createOscillator(), lg = c.createGain();
+  o.type = type; o.frequency.setValueAtTime(f1, t); o.frequency.exponentialRampToValueAtTime(Math.max(f2, 20), t + dur);
+  l.frequency.value = rate; lg.gain.value = depth; l.connect(lg); lg.connect(o.frequency);
+  g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(vol, t + .02); g.gain.setValueAtTime(vol, t + dur * .7); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); g.connect(out()); o.start(t); l.start(t); o.stop(t + dur + .05); l.stop(t + dur + .05);
+}
 const POPS = {
-  rubber(p){ crack(p); tone('sine', 150 * p, 45, .18, .22); tone('square', 900 * p, 70, .12, .05); },
-  squeak(p){ tone('triangle', 650 * p, 1500 * p, .11, .07); setTimeout(() => crack(p * 1.1), 95); },
-  bass(p){ tone('sine', 115 * p, 32, .38, .32); noise(.22, .3, 'lowpass', 420 * p); noise(.04, .15, 'highpass', 1800); },
-  sparkle(p){ crack(p, .26); [1568, 2093, 2637, 3136].forEach((f, i) => tone('sine', f * p, f * p, .45, .04, .03 + i * .055)); },
-  bloop(p){ tone('sine', 1250 * p, 260 * p, .13, .14); tone('sine', 620 * p, 150, .22, .1, .04); noise(.03, .12, 'highpass', 3000); },
-  confetti(p){ crack(p, .28); for (let i = 0; i < 7; i++) noise(.02 + Math.random() * .02, .05 + Math.random() * .05, 'highpass', 3000 + Math.random() * 3000, .9, .04 + Math.random() * .28); },
-  whistle(p){ tone('sine', 1900 * p, 320 * p, .5, .05); noise(.5, .07, 'bandpass', 3200 * p, 3, 0, 700); setTimeout(() => crack(p * .9, .2), 430); }
+  // 1. classic rubber pop: sharp snap + body thump
+  classic(p){ noise(.05, .38, 'highpass', 2200 * p, .8); tone('sine', 160 * p, 45, .18, .25); },
+  // 2. cartoon boing: springy wobble, then a pop
+  boing(p){ wobble('sine', 220 * p, 520 * p, .45, .2, 0, 14, 60 * p); noise(.04, .25, 'highpass', 2600, .8, .42); },
+  // 3. squeaky rubber: high squeal sliding up, tiny pop
+  squeak(p){ wobble('triangle', 900 * p, 2200 * p, .22, .09, 0, 32, 120); noise(.03, .2, 'highpass', 3500, .9, .2); },
+  // 4. deep boom: heavy sub drop and rumble
+  boom(p){ tone('sine', 95 * p, 28, .7, .4); noise(.5, .3, 'lowpass', 300 * p, .7); noise(.04, .12, 'highpass', 1500); },
+  // 5. magic sparkle: soft puff + glittering bells
+  sparkle(p){ noise(.06, .12, 'bandpass', 3000, 1); [1568, 1976, 2349, 2637, 3136].forEach((f, i) => tone('sine', f * p, f * p, .6, .05, .02 + i * .06)); },
+  // 6. deflating whistle: the balloon flies away with a fluttering whistle
+  whistle(p){ wobble('sine', 1600 * p, 380 * p, .9, .07, 0, 18, 70); noise(.9, .05, 'bandpass', 2500, 4, 0, 600); },
+  // 7. water bloop: two rising bubbles
+  bloop(p){ tone('sine', 280 * p, 1150 * p, .09, .22); tone('sine', 380 * p, 1500 * p, .08, .16, .09); },
+  // 8. party popper: bang + crackling confetti
+  popper(p){ noise(.12, .35, 'bandpass', 1400 * p, .6); tone('triangle', 600 * p, 1200 * p, .08, .06); for (let i = 0; i < 10; i++) noise(.015 + Math.random() * .02, .06 + Math.random() * .06, 'highpass', 3000 + Math.random() * 4000, .9, .06 + Math.random() * .35); },
+  // 9. laser zap: futuristic pew from 2031
+  laser(p){ tone('sawtooth', 2400 * p, 90, .28, .07); tone('square', 1800 * p, 60, .22, .04, .03); },
+  // 10. kiss "mwah": soft smack and a sweet rising note
+  kiss(p){ noise(.07, .3, 'lowpass', 900, 1.5); tone('sine', 520 * p, 880 * p, .25, .12, .05); }
 };
-const FAMILY = [['rubber', 'bloop'], ['sparkle', 'rubber'], ['squeak', 'confetti'], ['bass', 'whistle']];
-let popCount = 0;
+const POP_NAMES = Object.keys(POPS);
+let bag = [], lastPop = '', popCount = 0;
+function nextPop(){
+  if (!bag.length){ bag = POP_NAMES.slice().sort(() => Math.random() - .5); if (bag[bag.length - 1] === lastPop) bag.unshift(bag.pop()); }
+  lastPop = bag.pop(); return lastPop;
+}
 export function popSound(colorIndex, scale){
   popCount++;
-  const fam = FAMILY[(colorIndex || 0) % FAMILY.length];
-  const p = (1.15 - ((scale || 1) - .75) * .5) * (.92 + Math.random() * .16);
-  POPS[fam[Math.floor(Math.random() * fam.length)]](p);
-  if (popCount % 10 === 0){ setTimeout(() => { POPS.sparkle(1.2); sfx.yay(); }, 180); }
+  const p = (1.15 - ((scale || 1) - .75) * .5) * (.94 + Math.random() * .12);
+  POPS[nextPop()](p);
+  if (popCount % 10 === 0) setTimeout(() => sfx.yay(), 250);
   return popCount;
 }
 
