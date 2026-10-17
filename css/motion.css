@@ -24,3 +24,6 @@ html.lenis, html.lenis body{height:auto}
 @media (prefers-reduced-motion: reduce){
   .btn-shine::after{animation:none}
 }
+
+/* Push-pin cursor (📌) while the mouse is over a balloon. Hotspot = the needle tip (bottom-left). */
+html.pin-cursor, html.pin-cursor *{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Cpath d='M3 33 L16 20' stroke='%23596270' stroke-width='3.2' stroke-linecap='round'/%3E%3Cpath d='M3 33 L16 20' stroke='%23D6DBE3' stroke-width='1.4' stroke-linecap='round'/%3E%3Cg transform='rotate(45 23 13)'%3E%3Cpath d='M19 11 h8 l1.6 9 h-11.2 z' fill='%23C81E3A' stroke='%23fff' stroke-width='1.2'/%3E%3Cellipse cx='23' cy='20.5' rx='7.5' ry='2.6' fill='%23E0314B' stroke='%23fff' stroke-width='1.2'/%3E%3Cellipse cx='23' cy='9.5' rx='6.5' ry='3.6' fill='%23FF4D6A' stroke='%23fff' stroke-width='1.2'/%3E%3Cellipse cx='21' cy='8.6' rx='2.2' ry='1.1' fill='%23fff' opacity='.7'/%3E%3C/g%3E%3C/svg%3E") 3 33, crosshair !important}

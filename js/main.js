@@ -42,9 +42,16 @@ function onIn(band){
 }
 
 /* ================= balloon popping ================= */
+const NO_POP = 'button, a, input, label, video, .panel, .paper, .orbit-stage, .strip, .cap, .plate-stage, .envelope, .letter, .cake-stage, .vault, .sheet, .chip, .journey, .glass, #viewer, #cinema';
+// mouse/trackpad only: show the push-pin cursor while it is over a balloon (see css/motion.css)
+document.addEventListener('pointermove', e => {
+  if (!app.galaxy) return;
+  if (e.pointerType !== 'mouse' || !app.arrived || e.target.closest(NO_POP)) app.galaxy.hoverAt(null); else app.galaxy.hoverAt(e.clientX, e.clientY);
+}, { passive: true });
+document.documentElement.addEventListener('pointerleave', () => { if (app.galaxy) app.galaxy.hoverAt(null); });
 document.addEventListener('pointerdown', e => {
   if (!app.galaxy || !app.arrived) return;
-  if (e.target.closest('button, a, input, label, video, .panel, .paper, .orbit-stage, .strip, .cap, .plate-stage, .envelope, .letter, .cake-stage, .vault, .sheet, .chip, .journey, .glass, #viewer, #cinema')) return;
+  if (e.target.closest(NO_POP)) return;
   app.galaxy.tryPop(e.clientX, e.clientY);
 });
 

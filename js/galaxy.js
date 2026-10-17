@@ -100,6 +100,9 @@ export function initGalaxy(){
   const far0 = new THREE.Vector3(0, 140, 260), cam = far0.clone(), tgt = new THREE.Vector3(), nxt = new THREE.Vector3();
   let intro = 0, introOn = false, last = performance.now(), running = true, boost = 0, release = 0, t = 0;
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  // hover: which balloon is under the mouse (checked every few frames, not on every mouse move)
+  let hoverX = -1, hoverY = -1, hovered = null, hoverTick = 0;
+  function pickBalloon(x, y){ ndc.set((x / innerWidth) * 2 - 1, -(y / innerHeight) * 2 + 1); ray.setFromCamera(ndc, nearCam); const hit = ray.intersectObjects(balloons.filter(b => b.visible).map(b => b.userData.body), false)[0]; return hit ? hit.object.parent : null; }
   const POPW = ['POP!', 'Boom!', 'Oops!', 'Bye balloon!', 'Pow!', 'Splat!'];
   let pops = 0;
   function frame(now){
@@ -116,8 +119,11 @@ export function initGalaxy(){
     for (const m of planes){ const u = m.userData; u.a += dt * u.sp; m.position.set(Math.cos(u.a) * u.R, u.y + Math.sin(t * .9 + u.ph) * .5, Math.sin(u.a) * u.R); const a2 = u.a + .05 * Math.sign(u.sp); nxt.set(Math.cos(a2) * u.R, u.y + Math.sin((t + .05) * .9 + u.ph) * .5, Math.sin(a2) * u.R); m.lookAt(nxt); m.rotateZ(Math.sin(t * 1.3 + u.ph) * .35 - .25 * Math.sign(u.sp)); }
     if (release > 0) release -= dt;
     const slow = reduce ? .3 : 1;
+    if (++hoverTick){ const h = hoverX >= 0 ? pickBalloon(hoverX, hoverY) : null; if (h !== hovered){ hovered = h; document.documentElement.classList.toggle('pin-cursor', !!h); } }
     for (const g of balloons){
       const u = g.userData; if (!g.visible) continue;
+      // the aimed-at balloon swells a little, like it knows what's coming
+      u.hv = (u.hv || 0) + (((g === hovered) ? 1 : 0) - (u.hv || 0)) * Math.min(1, dt * 10); u.body.scale.set(1 + u.hv * .1, 1.18 + u.hv * .12, 1 + u.hv * .1);
       g.position.y += u.speed * dt * slow * (release > 0 ? 3.2 : 1);
       g.position.x += Math.sin(t * .6 + u.phase) * .004; g.rotation.z = Math.sin(t * .8 + u.phase) * .14; g.rotation.y += dt * .25;
       const sp = u.str.geometry.attributes.position; for (let k = 1; k < sp.count; k++) sp.setX(k, Math.sin(t * 2.2 + u.phase + k * .6) * .045 * k); sp.needsUpdate = true;
@@ -137,10 +143,11 @@ export function initGalaxy(){
     flyIn(){ introOn = true; intro = 0; boost = .5; },
     spin(){ boost = .7; },
     release(sec){ release = sec; balloons.forEach(g => { if (g.userData.extra){ resetB(g, false); g.visible = true; } }); },
+    hoverAt(x, y){ if (x == null){ hoverX = hoverY = -1; if (hovered){ hovered = null; document.documentElement.classList.remove('pin-cursor'); } } else { hoverX = x; hoverY = y; } },
     tryPop(x, y){
-      ndc.set((x / innerWidth) * 2 - 1, -(y / innerHeight) * 2 + 1); ray.setFromCamera(ndc, nearCam);
-      const hit = ray.intersectObjects(balloons.filter(b => b.visible).map(b => b.userData.body), false)[0]; if (!hit) return false;
-      const g = hit.object.parent; g.visible = false; popText(x, y, pick(POPW)); popSound(g.userData.ci, g.scale.x / (small() ? .75 : 1)); confetti(x, y, 26); pops++;
+      // if the pin cursor is showing, that balloon pops even if it drifted a hair since the last hover check
+      const g = pickBalloon(x, y) || (hovered && hovered.visible ? hovered : null); if (!g) return false;
+      hovered = null; document.documentElement.classList.remove('pin-cursor'); g.visible = false; popText(x, y, pick(POPW)); popSound(g.userData.ci, g.scale.x / (small() ? .75 : 1)); confetti(x, y, 26); pops++;
       if (pops === 3) toast('Three balloons down. Balloon destroyer unlocked.');
       if (pops === 8) toast('Okay stop, those were imported from 2031.');
       if (pops === 15) toast('Fine. Unlimited balloons. Happy birthday.');
