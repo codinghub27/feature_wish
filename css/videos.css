@@ -1,0 +1,15 @@
+/* ---------- videos ---------- */
+/* Both clips are portrait phone videos, so frames are portrait and the whole frame is shown (contain). */
+.vgrid{display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 280px), 380px));justify-content:center;gap:28px}
+.vitem{display:flex;flex-direction:column;gap:10px;min-width:0}
+.vitem .hand{text-align:center}
+.strip{background:#05040F;border-radius:14px;padding:12px 0;box-shadow:0 24px 50px rgba(0,0,0,.45)}
+.holes{display:flex;justify-content:space-between;padding:0 12px}
+.holes span{width:14px;height:9px;border-radius:2px;background:#2A2550}
+.vframe{position:relative;margin:10px 12px;aspect-ratio:3/4;max-width:100%;border-radius:8px;background:#000;overflow:hidden;display:grid;place-items:center}
+.vframe video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+.vplay{position:absolute;inset:0;z-index:2;display:grid;place-items:center;border:0;padding:0;background:radial-gradient(circle, rgba(7,6,22,.15), rgba(7,6,22,.55));cursor:pointer;transition:opacity .3s ease}
+.vframe.playing .vplay{opacity:0;pointer-events:none}
+.vplay .play{width:72px;height:72px;border-radius:50%;background:var(--gold);color:var(--space);display:grid;place-items:center;box-shadow:0 5px 0 var(--gold-deep), 0 0 40px rgba(245,199,107,.5);animation:pulse 2s ease-in-out infinite}
+.vplay .play svg{width:28px;height:28px;margin-left:4px}
+@keyframes pulse{50%{transform:scale(1.08)}}

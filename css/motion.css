@@ -1,0 +1,26 @@
+/* ---------- motion layer (experimental) ---------- */
+/* Lenis smooth scrolling */
+html.lenis, html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto !important}
+.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
+.lenis.lenis-stopped{overflow:hidden}
+
+/* When GSAP drives the reveals, the CSS transition must step aside or the two fight each frame. */
+.has-gsap .reveal{transition:none}
+.has-gsap body.started .band:not(.in) .reveal{visibility:hidden}
+
+/* Gate UI sits above the Tailwind HUD layer */
+.g-ui{z-index:2}
+
+/* Light sweep across gold buttons */
+.btn-shine{overflow:hidden;isolation:isolate}
+.btn-shine::after{content:"";position:absolute;inset:-2px;z-index:-1;background:linear-gradient(110deg, transparent 30%, rgba(255,255,255,.75) 48%, transparent 66%);transform:translateX(-120%);animation:shine 3.2s ease-in-out 1s infinite}
+@keyframes shine{0%{transform:translateX(-120%)}55%,100%{transform:translateX(120%)}}
+
+/* GPU hints for the always-moving pieces */
+.name-btn,.plate-float,.walker,.vplay .play,.wax{will-change:transform}
+#fx,#bg3d,#portal{transform:translateZ(0)}
+
+@media (prefers-reduced-motion: reduce){
+  .btn-shine::after{animation:none}
+}

@@ -1,0 +1,69 @@
+html,body{margin:0;padding:0}
+img,video{max-width:100%}
+[hidden]{display:none!important}
+/* Layout: a single journey. A gift from the future opens into a wormhole, which drops her into a living 3D galaxy (balloons, hearts, paper-plane letters). Every chapter floats over that galaxy: glass panels for the mission, paper for things from 2031. */
+:root{
+  --space:#070616;
+  --deep:#120F2E;
+  --glass:rgba(18,15,46,.66);
+  --glass-strong:rgba(14,12,36,.9);
+  --star:#FFF3E0;
+  --muted:#B9B2DE;
+  --gold:#F5C76B;
+  --gold-deep:#A87A1E;
+  --rose:#FF6F91;
+  --rose-deep:#A6284D;
+  --violet:#9D7BFF;
+  --cyan:#6FE7DD;
+  --paper:#F2E8D3;
+  --paper-2:#E7DABE;
+  --ink:#1D1A2C;
+  --ink-soft:#4C4560;
+  --red-ink:#B3263B;
+  --ok:#2F8F5B;
+  --line:rgba(255,243,224,.14);
+  --line-strong:rgba(255,243,224,.34);
+  --paper-line:rgba(29,26,44,.2);
+  --f-head:'Playfair Display', Georgia, 'Times New Roman', serif;
+  --f-mast:'UnifrakturMaguntia', 'Old English Text MT', Georgia, serif;
+  --f-body:'Outfit', 'Segoe UI', system-ui, sans-serif;
+  --f-mono:'JetBrains Mono', ui-monospace, 'Courier New', monospace;
+  --f-hand:'Caveat', 'Segoe Print', 'Comic Sans MS', cursive;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--space);color:var(--star);font-family:var(--f-body);font-size:17px;line-height:1.6;overflow-x:hidden}
+body.locked{overflow:hidden}
+body.nogl{background:radial-gradient(ellipse at 50% 30%, #2A1F5C, var(--space) 70%) fixed}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:3px solid var(--cyan);outline-offset:3px;border-radius:8px}
+button{font-family:inherit;color:inherit}
+
+#bg3d{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
+#fx{position:fixed;inset:0;width:100%;height:100%;z-index:80;pointer-events:none}
+main{position:relative;z-index:2;overflow-x:clip}
+
+/* shared */
+.band{position:relative;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:clamp(84px, 12vw, 150px)}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.center{align-items:center;text-align:center}
+.hud{margin:0;display:inline-flex;align-items:center;gap:10px;font-family:var(--f-mono);font-weight:700;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan)}
+.hud::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan);animation:blink 1.4s steps(2) infinite}
+.h2{margin:0;font-family:var(--f-head);font-weight:900;font-size:clamp(38px, 6.4vw, 72px);line-height:1.02;letter-spacing:-.01em;text-wrap:balance;text-shadow:0 4px 30px rgba(7,6,22,.7)}
+.h2 em{font-style:italic;color:var(--gold)}
+.lede{margin:0;max-width:58ch;font-size:clamp(17px, 2vw, 20px);color:#D6D0F2;text-shadow:0 1px 2px rgba(7,6,22,1), 0 0 10px rgba(7,6,22,.95), 0 2px 22px rgba(7,6,22,.9)}
+.center .lede{text-wrap:balance}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 26px;border-radius:999px;border:1.5px solid transparent;font-weight:800;font-size:16px;text-decoration:none;cursor:pointer;transition:transform .18s ease, box-shadow .18s ease;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+.btn:hover{transform:translateY(-2px) rotate(-1deg)}
+.btn:active{transform:translateY(2px) scale(.98)}
+.btn:disabled{opacity:.5;cursor:default;transform:none}
+.btn svg{width:20px;height:20px;flex:none}
+.btn-gold{background:var(--gold);color:var(--space);box-shadow:0 0 0 6px rgba(245,199,107,.15), 0 12px 34px rgba(245,199,107,.35)}
+.btn-rose{background:var(--rose);color:var(--space);box-shadow:0 12px 34px rgba(255,111,145,.35)}
+.btn-ghost{background:rgba(7,6,22,.45);color:var(--star);border-color:var(--line-strong)}
+.glass{background:var(--glass);border:1px solid var(--line);border-radius:26px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+@keyframes blink{50%{opacity:.25}}
+@keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.reveal{transition:opacity .9s ease, transform .9s cubic-bezier(.2,.8,.2,1)}
+body.started .band:not(.in) .reveal{opacity:0;transform:translateY(24px)}

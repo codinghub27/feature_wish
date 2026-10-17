@@ -1,4 +1,6 @@
 {
+  "buildCommand": "npm run build",
+  "outputDirectory": ".",
   "cleanUrls": true,
   "headers": [
     { "source": "/photos/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }] }

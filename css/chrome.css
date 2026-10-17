@@ -1,0 +1,8 @@
+/* ---------- chrome ---------- */
+.chip{position:fixed;z-index:70;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line-strong);background:var(--glass-strong);color:var(--star);font:700 13px var(--f-mono);letter-spacing:.06em;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.chip svg{width:17px;height:17px}
+#yearChip{top:calc(12px + env(safe-area-inset-top, 0px));left:calc(12px + env(safe-area-inset-left, 0px))}
+#yearChip b{color:var(--gold)}
+#soundBtn{top:calc(12px + env(safe-area-inset-top, 0px));right:calc(12px + env(safe-area-inset-right, 0px));cursor:pointer}
+#editBtn{bottom:calc(14px + env(safe-area-inset-bottom, 0px));right:calc(12px + env(safe-area-inset-right, 0px));width:48px;padding:0;justify-content:center;cursor:pointer}
+body.locked #yearChip,body.locked #editBtn{display:none}
