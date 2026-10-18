@@ -4,8 +4,10 @@ import { sfx, ac, noise, duckPad, musicBox, startPad, stopPad, isSoundOn } from 
 import { confetti, explode, fireworks } from './fx.js';
 import { initCake } from './cake.js';
 
-/* Set this to the published video file (for example 'photos/secret.mp4') once the video is added. */
-const SECRET_VIDEO = '';
+/* The secret video: a 720p web copy of photos/secret video/Directed By Sravan 🎬 🥸.mp4 (the 136 MB original is not deployed).
+   SECRET_TITLE is shown under the video while it plays. */
+const SECRET_VIDEO = 'photos/secret%20video/secret-web.mp4';
+const SECRET_TITLE = 'Directed By Sravan 🎬 🥸';
 
 /* ================= cake: hold to blow ================= */
 export const cake = initCake();
@@ -53,13 +55,17 @@ export function wishSequence(){
 export let videoURL = SECRET_VIDEO, vaultOpen = false;
 if (SECRET_VIDEO) $('#pick').hidden = true;
 $('#secretFile').addEventListener('change', e => { const f = e.target.files && e.target.files[0]; if (!f) return; videoURL = URL.createObjectURL(f); toast('Preview video loaded. Blow the candles to unlock it.'); });
-export function unlockVault(){ if (vaultOpen) return; vaultOpen = true; $('#vault').classList.add('open'); sfx.unlock(); $('#vaultTitle').textContent = 'Unlocked'; $('#vaultText').textContent = 'Your wish opened it. Find a quiet spot, turn the sound up, and press play.'; $('#playSecret').textContent = 'Play the secret video'; }
+export function unlockVault(){ if (vaultOpen) return; vaultOpen = true; if (videoURL){ vid.preload = 'auto'; vid.src = videoURL; } // start buffering early so it plays right after the countdown
+  $('#vault').classList.add('open'); sfx.unlock(); $('#vaultTitle').textContent = 'Unlocked'; $('#vaultText').textContent = 'Your wish opened it. Find a quiet spot, turn the sound up, and press play.'; $('#playSecret').textContent = 'Play the secret video'; }
 $('#playSecret').addEventListener('click', () => { if (!vaultOpen){ const v = $('#vault'); v.classList.remove('shake'); void v.offsetWidth; v.classList.add('shake'); sfx.bad(); toast('Nice try. Blow out your candles first.'); return; } openCinema(); });
 export const cinema = $('#cinema'), leader = $('#leader'), lc = leader.getContext('2d'), vid = $('#secretVideo');
 export let leaderRaf = 0;
 export function openCinema(){
   stopPad(); if (app.galaxy) app.galaxy.pause(true); cinema.hidden = false; lockScroll(true);
-  $('#cineEnd').hidden = true; $('#cineMissing').hidden = true; vid.classList.remove('show'); vid.pause();
+  $('#cineEnd').hidden = true; $('#cineMissing').hidden = true; $('#cinePlay').hidden = true; vid.classList.remove('show'); cinema.classList.remove('playing');
+  // iPhones only allow a video with sound to start from a tap, so start it muted inside this tap and pause it;
+  // the same element may then play with sound after the countdown.
+  if (videoURL){ if (vid.getAttribute('src') !== videoURL) vid.src = videoURL; vid.muted = true; const pr = vid.play(); if (pr && pr.then) pr.then(() => { vid.pause(); vid.currentTime = 0; vid.muted = false; }).catch(() => { vid.muted = false; }); else { vid.pause(); vid.muted = false; } }
   requestAnimationFrame(() => cinema.classList.add('rolling'));
   const d = Math.min(devicePixelRatio || 1, 2); leader.width = innerWidth * d; leader.height = innerHeight * d; lc.setTransform(d, 0, 0, d, 0, 0); leader.hidden = false;
   const t0 = performance.now(), total = reduce ? 600 : 3600; let lastN = 0; cancelAnimationFrame(leaderRaf);
@@ -73,8 +79,17 @@ export function openCinema(){
     if (el < total) leaderRaf = requestAnimationFrame(draw); else startVideo();
   })(t0);
 }
-export function startVideo(){ leader.hidden = true; if (!videoURL){ $('#cineMissing').hidden = false; return; } vid.src = videoURL; vid.classList.add('show'); vid.currentTime = 0; const p = vid.play(); if (p && p.catch) p.catch(() => {}); }
-vid.addEventListener('ended', () => { $('#cineEnd').hidden = false; confetti(innerWidth / 2, innerHeight * .3, 160); fireworks(3); });
+export function startVideo(){
+  leader.hidden = true; if (!videoURL){ $('#cineMissing').hidden = false; return; }
+  if (vid.getAttribute('src') !== videoURL) vid.src = videoURL;
+  vid.muted = false; vid.classList.add('show'); vid.currentTime = 0;
+  const p = vid.play(); if (p && p.catch) p.catch(() => { $('#cinePlay').hidden = false; }); // browser blocked it: show a big play button
+}
+$('#cineCap').textContent = SECRET_TITLE;
+$('#cinePlay').addEventListener('click', () => { $('#cinePlay').hidden = true; vid.muted = false; const p = vid.play(); if (p && p.catch) p.catch(() => { $('#cinePlay').hidden = false; }); });
+vid.addEventListener('playing', () => { if (!vid.muted) cinema.classList.add('playing'); });
+vid.addEventListener('pause', () => cinema.classList.remove('playing'));
+vid.addEventListener('ended', () => { cinema.classList.remove('playing'); $('#cineEnd').hidden = false; confetti(innerWidth / 2, innerHeight * .3, 160); fireworks(3); });
 export function closeCinema(){ cancelAnimationFrame(leaderRaf); vid.pause(); cinema.classList.remove('rolling'); cinema.hidden = true; lockScroll(false); if (app.galaxy) app.galaxy.pause(false); if (isSoundOn()) startPad(); scrollToEl($('#final')); }
 $('#cineClose').addEventListener('click', closeCinema); $('#cineDone').addEventListener('click', closeCinema); $('#cineMissClose').addEventListener('click', closeCinema);
 $('#cineAgain').addEventListener('click', () => { $('#cineEnd').hidden = true; vid.currentTime = 0; vid.play(); });

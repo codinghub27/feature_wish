@@ -4,19 +4,20 @@ import { sfx } from './audio.js';
 import { ctex, dotTex, hasGL, makeRenderer } from './gl.js';
 
 /* ================= MEMORY PLANET ================= */
-/* Every file in photos/Exhibit C. The card title and the viewer caption are the file name.
-   Order matters: the two videos "That Kind Heart" and "No Sun…" sit side by side on the orbit. */
+/* Every file in photos/Exhibit C. The card title and the viewer caption are the file name (emojis included).
+   If you rename a file, rename it here too. Order matters: "That Kind Heart" and "No Sun…" sit side by side. */
 export const MEM_DIR = 'photos/Exhibit C/';
 export const MEM = [
-  { name: 'That Innocent Face', file: 'That Innocent Face.jpeg', type: 'image', tint: '#F9C9D6' },
-  { name: 'That Kind Heart', file: 'That Kind Heart.mp4', type: 'video', tint: '#FBE3AE' },
-  { name: 'No Sun can beat the shine from her', file: 'No Sun can beat the shine from her.mp4', type: 'video', tint: '#C6F1EC' },
-  { name: 'Most Beautful Expression on Earth', file: 'Most Beautful Expression on Earth.jpeg', type: 'image', tint: '#DCD3FF' },
-  { name: 'beautipul girl', file: 'beautipul girl.mp4', type: 'video', tint: '#F9C9D6' },
-  { name: 'Engliss Kissuu', file: 'Engliss Kissuu.jpeg', type: 'image', tint: '#FBE3AE' },
-  { name: 'What Destiny is Telling You', file: 'What Destiny is Telling You.jpeg', type: 'image', tint: '#C6F1EC' }
+  { file: 'That Innocent Face 🥺🫶.jpeg', type: 'image', tint: '#F9C9D6' },
+  { file: 'That Kind Heart 🤌 💖.mp4', type: 'video', tint: '#FBE3AE' },
+  { file: 'No Sun can beat the shine from her ❤️‍🔥✨.mp4', type: 'video', tint: '#C6F1EC' },
+  { file: 'Most Beautful Expression on Earth 🤪😌.jpeg', type: 'image', tint: '#DCD3FF' },
+  { file: 'beautipul girl 🫣🫶.mp4', type: 'video', tint: '#F9C9D6' },
+  { file: 'Engliss Kissuu 😘😝.jpeg', type: 'image', tint: '#FBE3AE' },
+  { file: 'What Destiny is Telling You 🙌🙇‍♂️.jpeg', type: 'image', tint: '#C6F1EC' }
 ];
-MEM.forEach(m => { m.src = encodeURI(MEM_DIR + m.file); });
+// the displayed name is simply the file name without its extension
+MEM.forEach(m => { m.name = m.file.replace(/\.[^.]+$/, ''); m.src = encodeURI(MEM_DIR + m.file); });
 export const memSrc = [];
 export const ICON_CAM = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
 export const ICON_PLAY = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>';

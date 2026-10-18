@@ -302,7 +302,9 @@
 <div id="cinema" hidden>
   <span class="cbar top"></span><span class="cbar bot"></span>
   <canvas id="leader" aria-hidden="true"></canvas>
-  <video id="secretVideo" playsinline controls preload="metadata"></video>
+  <video id="secretVideo" playsinline controls preload="none"></video>
+  <p class="cine-cap" id="cineCap" aria-live="polite"></p>
+  <button class="cine-play" id="cinePlay" type="button" aria-label="Play the secret video" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg></button>
   <div class="cine-msg" id="cineEnd" hidden><h3>Happy birthday, <span data-name>IAS Anusha</span>. I love you.</h3><p>That's the end of this journey. The rest, we'll write together.</p><div class="row-end" style="justify-content:center"><button class="btn btn-ghost" id="cineAgain" type="button">Watch again</button><button class="btn btn-gold" id="cineDone" type="button">Close</button></div></div>
   <div class="cine-msg" id="cineMissing" hidden><h3>The video is on its way</h3><p>This spot is saved for something very special. Check back soon.</p><div class="row-end" style="justify-content:center"><button class="btn btn-gold" id="cineMissClose" type="button">Close</button></div></div>
   <button class="chip cine-close" id="cineClose" type="button">Close</button>

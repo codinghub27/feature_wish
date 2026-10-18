@@ -18,7 +18,12 @@
 #cinema .cbar.bot{bottom:0;transform:translateY(100%)}
 #cinema.rolling .cbar{transform:none}
 #leader{position:absolute;inset:0;width:100%;height:100%;z-index:2}
-#secretVideo{position:relative;z-index:1;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity 1.2s ease;background:#000}
+/* the video sits between the two cinema bars, leaving a strip at the bottom for its title */
+#secretVideo{position:absolute;z-index:1;left:0;right:0;top:10vh;width:100%;height:calc(80vh - 64px);object-fit:contain;opacity:0;transition:opacity 1.2s ease;background:#000}
+.cine-cap{position:absolute;z-index:4;left:16px;right:16px;bottom:10vh;height:64px;margin:0;display:flex;align-items:center;justify-content:center;font-family:var(--f-hand);font-weight:700;font-size:clamp(26px, 4.4vw, 40px);line-height:1;color:var(--gold);text-shadow:0 0 22px rgba(245,199,107,.55);text-align:center;opacity:0;transform:translateY(10px);transition:opacity .9s ease .4s, transform .9s ease .4s;pointer-events:none}
+#cinema.playing .cine-cap{opacity:1;transform:none}
+.cine-play{position:absolute;z-index:5;left:50%;top:50%;width:96px;height:96px;margin:-48px 0 0 -48px;border:0;border-radius:50%;background:var(--gold);color:var(--space);display:grid;place-items:center;cursor:pointer;box-shadow:0 0 0 10px rgba(245,199,107,.2), 0 0 60px rgba(245,199,107,.5);animation:pulse 2s ease-in-out infinite}
+.cine-play svg{width:38px;height:38px;margin-left:6px}
 #secretVideo.show{opacity:1}
 .cine-msg{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px;background:rgba(0,0,0,.75)}
 .cine-msg h3{margin:0;font-family:var(--f-head);font-style:italic;font-weight:900;font-size:clamp(34px, 6vw, 64px);line-height:1.1;color:var(--gold);text-wrap:balance}
