@@ -62,6 +62,7 @@ export const cinema = $('#cinema'), leader = $('#leader'), lc = leader.getContex
 export let leaderRaf = 0;
 export function openCinema(){
   stopPad(); if (app.galaxy) app.galaxy.pause(true); cinema.hidden = false; lockScroll(true);
+  $('#toast').classList.remove('show'); // no notifications on top of the film
   $('#cineEnd').hidden = true; $('#cineMissing').hidden = true; $('#cinePlay').hidden = true; vid.classList.remove('show'); cinema.classList.remove('playing');
   // iPhones only allow a video with sound to start from a tap, so start it muted inside this tap and pause it;
   // the same element may then play with sound after the countdown.
