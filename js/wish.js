@@ -68,7 +68,9 @@ export function openCinema(){
   $('#cineEnd').hidden = true; $('#cineMissing').hidden = true; $('#cinePlay').hidden = true; vid.classList.remove('show'); cinema.classList.remove('playing');
   // iPhones only allow a video with sound to start from a tap, so start it muted inside this tap and pause it;
   // the same element may then play with sound after the countdown.
-  if (videoURL){ if (vid.getAttribute('src') !== videoURL) vid.src = videoURL; vid.muted = true; const pr = vid.play(); if (pr && pr.then) pr.then(() => { vid.pause(); vid.currentTime = 0; vid.muted = false; }).catch(() => { vid.muted = false; }); else { vid.pause(); vid.muted = false; } }
+  // filmStarted guards the unlock: if it finishes late, it must not pause a film the countdown already started.
+  filmStarted = false;
+  if (videoURL){ if (vid.getAttribute('src') !== videoURL) vid.src = videoURL; vid.muted = true; const pr = vid.play(); const done = () => { if (!filmStarted){ vid.pause(); vid.currentTime = 0; } vid.muted = false; }; if (pr && pr.then) pr.then(done).catch(() => { vid.muted = false; }); else done(); }
   requestAnimationFrame(() => cinema.classList.add('rolling'));
   const d = Math.min(devicePixelRatio || 1, 2); leader.width = innerWidth * d; leader.height = innerHeight * d; lc.setTransform(d, 0, 0, d, 0, 0); leader.hidden = false;
   const t0 = performance.now(), total = reduce ? 600 : 3600; let lastN = 0; cancelAnimationFrame(leaderRaf);
@@ -82,8 +84,12 @@ export function openCinema(){
     if (el < total) leaderRaf = requestAnimationFrame(draw); else startVideo();
   })(t0);
 }
+let filmStarted = false;
 export function startVideo(){
   leader.hidden = true; if (!videoURL){ $('#cineMissing').hidden = false; return; }
+  filmStarted = true;
+  // safety net: if the film still isn't running shortly after the countdown, offer the big play button
+  setTimeout(() => { if (!cinema.hidden && vid.paused && !vid.ended && $('#cineEnd').hidden) $('#cinePlay').hidden = false; }, 1500);
   if (vid.getAttribute('src') !== videoURL) vid.src = videoURL;
   vid.muted = false; vid.classList.add('show'); vid.currentTime = 0;
   const p = vid.play(); if (p && p.catch) p.catch(() => { $('#cinePlay').hidden = false; }); // browser blocked it: show a big play button
