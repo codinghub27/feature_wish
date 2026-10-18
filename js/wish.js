@@ -62,6 +62,8 @@ export const cinema = $('#cinema'), leader = $('#leader'), lc = leader.getContex
 export let leaderRaf = 0;
 export function openCinema(){
   stopPad(); if (app.galaxy) app.galaxy.pause(true); cinema.hidden = false; lockScroll(true);
+  // true full screen (needs this tap); phones that support it also turn to landscape for the wide film
+  try { const fs = cinema.requestFullscreen || cinema.webkitRequestFullscreen; if (fs && !document.fullscreenElement){ const r = fs.call(cinema); if (r && r.then) r.then(() => { try { const o = screen.orientation; if (o && o.lock) o.lock('landscape').catch(() => {}); } catch(e){} }).catch(() => {}); } } catch(e){}
   $('#toast').classList.remove('show'); // no notifications on top of the film
   $('#cineEnd').hidden = true; $('#cineMissing').hidden = true; $('#cinePlay').hidden = true; vid.classList.remove('show'); cinema.classList.remove('playing');
   // iPhones only allow a video with sound to start from a tap, so start it muted inside this tap and pause it;
@@ -91,6 +93,9 @@ $('#cinePlay').addEventListener('click', () => { $('#cinePlay').hidden = true; v
 vid.addEventListener('playing', () => { if (!vid.muted) cinema.classList.add('playing'); });
 vid.addEventListener('pause', () => cinema.classList.remove('playing'));
 vid.addEventListener('ended', () => { cinema.classList.remove('playing'); $('#cineEnd').hidden = false; confetti(innerWidth / 2, innerHeight * .3, 160); fireworks(3); });
-export function closeCinema(){ cancelAnimationFrame(leaderRaf); vid.pause(); cinema.classList.remove('rolling'); cinema.hidden = true; lockScroll(false); if (app.galaxy) app.galaxy.pause(false); if (isSoundOn()) startPad(); scrollToEl($('#final')); }
+export function closeCinema(){ cancelAnimationFrame(leaderRaf); vid.pause();
+  try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch(e){}
+  try { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {}); else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen(); } catch(e){}
+  cinema.classList.remove('rolling'); cinema.hidden = true; lockScroll(false); if (app.galaxy) app.galaxy.pause(false); if (isSoundOn()) startPad(); scrollToEl($('#final')); }
 $('#cineClose').addEventListener('click', closeCinema); $('#cineDone').addEventListener('click', closeCinema); $('#cineMissClose').addEventListener('click', closeCinema);
 $('#cineAgain').addEventListener('click', () => { $('#cineEnd').hidden = true; vid.currentTime = 0; vid.play(); });
