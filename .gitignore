@@ -4,6 +4,4 @@ node_modules/
 Thumbs.db
 *.log
 .playwright-mcp/
-
-.vercel
-photos/secret video/Directed*
+Directed*.mp4
