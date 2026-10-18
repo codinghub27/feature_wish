@@ -6,7 +6,7 @@ import { initCake } from './cake.js';
 
 /* The secret video: a 720p web copy of photos/secret video/Directed By Sravan 🎬 🥸.mp4 (the 136 MB original is not deployed).
    SECRET_TITLE is shown under the video while it plays. */
-const SECRET_VIDEO = 'photos/secret%20video/secret-web.mp4';
+const SECRET_VIDEO = 'photos/secret%20video/secret-film-wide.mp4';
 const SECRET_TITLE = 'Directed By Sravan 🎬 🥸';
 
 /* ================= cake: hold to blow ================= */
